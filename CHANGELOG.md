@@ -1,20 +1,9 @@
 # Changelog
 
-## v0.0.0 Initial Trelease (untested)
+## v0.0.0 Initial Release (untested)
+## v0.1.0 Functional Release (tested)
 
 ### Added or Changed
 
-- Setup files
-<!--
-- Added this changelog :)
-- Fixed typos in both templates
-- Back to top links
-- Added more "Built With" frameworks/libraries
-- Changed table of contents to start collapsed
-- Added checkboxes for major features on roadmap
-
-### Removed
-
-- Some packages/libraries from acknowledgements I no longer use
-
--->
+* The `hmp` package is usable.
+* Working executable as example for the `hmp` package usage added.
