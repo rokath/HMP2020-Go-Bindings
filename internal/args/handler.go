@@ -88,7 +88,6 @@ func Handler(w io.Writer, fSys *afero.Afero, args []string) error {
 	hmp.SetOutputChannel2On()
 	fmt.Print(hmp.VoltageChannel2())
 	fmt.Print(hmp.CurrentChannel2())
-
 	for {
 		time.Sleep(5 * time.Second)
 		hmp.SetOutputChannel2Off()
