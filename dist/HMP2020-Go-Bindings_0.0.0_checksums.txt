@@ -1,0 +1,1 @@
+6793882f4a19a6ec2b8933b773717408cacfec63bb0af808f63408c758d5cfd5  HMP2020-Go-Bindings_windows_amd64.zip
