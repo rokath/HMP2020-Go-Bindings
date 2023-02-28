@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"time"
 
 	"github.com/rokath/HMP2020-Go-Bindings/pkg/hmp"
 	"github.com/spf13/afero"
@@ -47,12 +48,6 @@ func Handler(w io.Writer, fSys *afero.Afero, args []string) error {
 		}
 	}
 
-	//  // Verify that a sub-command has been provided: arg[0] is the main command (hmp), arg[1] will be the sub-command.
-	//  if len(args) < 2 {
-	//  	m := "no args, try: '" + args[0] + " -help'"
-	//  	return errors.New(m)
-	//  }
-
 	flag.Parse()
 
 	if flag.NFlag() == 0 { // no CLI flags
@@ -61,6 +56,17 @@ func Handler(w io.Writer, fSys *afero.Afero, args []string) error {
 	}
 
 	hmp.Verbose = Verbose
+
+	if VersionFlag {
+		if Version != "" {
+			fmt.Print("version=", Version)
+		}
+		if Commit != "" {
+			fmt.Print("commit=", Commit)
+		}
+		fmt.Println("date=", Date)
+		return nil
+	}
 
 	if hmp.ComPort != "" {
 		if Verbose {
@@ -74,5 +80,19 @@ func Handler(w io.Writer, fSys *afero.Afero, args []string) error {
 		}
 	}
 
-	return nil
+	// example:
+	hmp.OutputGeneralOff()
+	hmp.SetVoltageChannel2("24")
+	hmp.SetCurrentChannel2("1000")
+	hmp.OutputGeneralOn()
+	hmp.SetOutputChannel2On()
+	fmt.Print(hmp.VoltageChannel2())
+	fmt.Print(hmp.CurrentChannel2())
+
+	for {
+		time.Sleep(5 * time.Second)
+		hmp.SetOutputChannel2Off()
+		time.Sleep(1000 * time.Millisecond)
+		hmp.SetOutputChannel2On()
+	}
 }

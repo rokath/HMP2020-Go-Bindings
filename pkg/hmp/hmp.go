@@ -26,7 +26,7 @@ var (
 )
 
 func init() {
-	flag.StringVar(&ComPort, "portHMP2020", "", "Verwende Port für HMP2020")
+	flag.StringVar(&ComPort, "portHMP2020", "", "Use Port for HMP2020")
 	flag.StringVar(&ComPort, "ph", "", "Short for portHMP2020")
 
 }
@@ -88,16 +88,18 @@ func (p *Tarm) Write(buf []byte) (int, error) {
 
 // Connect tries to get contact to HMP2020.
 func Connect() error {
-	response, e := SendAndReceive("*IDN?", 100) // 50 is the fractal border.
+	response, e := SendAndReceive("*IDN?\n", 100) // 50 is the fractal border.
 	if e != nil {
 		return e
 	}
 	exp := "ROHDE&SCHWARZ,HMP2020"
-	if response[:len(exp)] == exp {
-		fmt.Println(strings.TrimSuffix(response, "\n"), "connected")
-		return nil
+	if response[:len(exp)] != exp {
+		return fmt.Errorf("HMP2020 not connected")
 	}
-	return fmt.Errorf("HMP2020 not connected")
+	if Verbose {
+		fmt.Println(strings.TrimSuffix(response, "\n"), "connected")
+	}
+	return nil
 }
 
 // Send transmits cmd and waits ms afterwards before returning.
@@ -113,7 +115,7 @@ func Send(cmd string, ms time.Duration) {
 // SendAndReceive transmits cmd, waits ms milliseconds and returns n read bytes in b. Set ms = 0 if no answer is expected.
 // The returned string is "as is" from HMP2020.
 func SendAndReceive(cmd string, ms time.Duration) (string, error) {
-	Send(cmd+"\n", ms)    // needs a line end
+	Send(cmd, ms)         // needs a line end
 	b := make([]byte, 64) // 32 needed
 	n, e := Com.Read(b)
 	if e != nil {
@@ -126,4 +128,90 @@ func SendAndReceive(cmd string, ms time.Duration) (string, error) {
 	b = b[:n]
 	r := string(b)
 	return r, e
+}
+
+func Query(cmd string) (response string) {
+	if Verbose {
+		fmt.Println("query:", cmd)
+	}
+	response, e := SendAndReceive(cmd+"\r\n", 500) // 50 is the fractal border.
+	if e != nil {
+		fmt.Println(e) // log.Fatal(e)
+	}
+	return
+}
+
+func Command(cmd string) {
+	if Verbose {
+		fmt.Println("command:", cmd)
+	}
+	Send(cmd+"\r\n", 100) // 50 is the fractal border.
+}
+
+func OutputGeneralOff() {
+	Command("OUTPUT:GENERAL OFF")
+}
+
+func OutputGeneralOn() {
+	Command("OUTPUT:GENERAL ON")
+}
+
+func SetOutputChannel1Off() {
+	Command("INST:SEL OUT1")
+	Command("OUTPUT:SELECT OFF")
+}
+
+func SetOutputChannel1On() {
+	Command("INST:SEL OUT1")
+	Command("OUTPUT:SELECT ON")
+}
+
+func SetOutputChannel2Off() {
+	Command("INST:SEL OUT2")
+	Command("OUTPUT:SELECT OFF")
+}
+
+func SetOutputChannel2On() {
+	Command("INST:SEL OUT2")
+	Command("OUTPUT:SELECT ON")
+}
+
+func SetVoltageChannel1(v string) {
+	Command("INST:SEL OUT1")
+	Command("SOURCE:VOLTAGE:LEVEL " + v)
+}
+
+func SetVoltageChannel2(v string) {
+	Command("INST:SEL OUT2")
+	Command("SOURCE:VOLTAGE:LEVEL " + v)
+}
+
+func SetCurrentChannel1(v string) {
+	Command("INST:SEL OUT1")
+	Command("SOURCE:CURRENT:LEVEL:IMM " + v)
+}
+
+func SetCurrentChannel2(v string) {
+	Command("INST:SEL OUT2")
+	Command("SOURCE:CURRENT:LEVEL:IMM " + v)
+}
+
+func VoltageChannel1() (v string) {
+	Command("INST:SEL OUT1")
+	return Query("MEASURE:SCALAR:VOLTAGE:DC?")
+}
+
+func VoltageChannel2() (v string) {
+	Command("INST:SEL OUT2")
+	return Query("MEASURE:SCALAR:VOLTAGE:DC?")
+}
+
+func CurrentChannel1() (v string) {
+	Command("INST:SEL OUT1")
+	return Query("MEASURE:SCALAR:CURRENT:DC?")
+}
+
+func CurrentChannel2() (v string) {
+	Command("INST:SEL OUT2")
+	return Query("MEASURE:SCALAR:CURRENT:DC?")
 }
