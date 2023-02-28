@@ -1,8 +1,11 @@
 # Changelog
 
-## v1.0.0
+## v0.0.0 Initial Trelease (untested)
 
 ### Added or Changed
+
+- Setup files
+<!--
 - Added this changelog :)
 - Fixed typos in both templates
 - Back to top links
@@ -13,3 +16,5 @@
 ### Removed
 
 - Some packages/libraries from acknowledgements I no longer use
+
+-->
