@@ -1,4 +1,4 @@
-8// Package hmp provides remote access to Rohde&Schwarz HMP2020 power supply
+8// Package hmp provides remote access to Rohde&Schwarz HMP2020 & HMP4040 power supply
 package hmp
 
 import (
