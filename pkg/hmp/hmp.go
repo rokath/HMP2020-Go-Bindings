@@ -68,9 +68,6 @@ func (p *Device) Write(buf []byte) (int, error) {
 
 // Close releases port.
 func (p *Device) Close() error {
-	if p.verbose {
-		fmt.Fprintln(p.w, "Closing COM port")
-	}
 	return p.Port.Close()
 }
 

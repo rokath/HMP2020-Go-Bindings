@@ -32,3 +32,7 @@
 ## v0.3.4 Refactored Release (tested)
 
 * Comport label added.
+
+## v0.3.5 Refactored Release (tested)
+
+* This is a minor correction.
