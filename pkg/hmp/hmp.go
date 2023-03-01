@@ -112,12 +112,13 @@ func Send(cmd string, ms time.Duration) {
 	time.Sleep(ms * time.Millisecond)
 }
 
-// SendAndReceive transmits cmd, waits ms milliseconds and returns n read bytes in b. Set ms = 0 if no answer is expected.
+// SendAndReceive transmits cmd, waits ms milliseconds and returns response in r.
 // The returned string is "as is" from HMP2020.
-func SendAndReceive(cmd string, ms time.Duration) (string, error) {
+func SendAndReceive(cmd string, ms time.Duration) (r string, e error) {
 	Send(cmd, ms)         // needs a line end
 	b := make([]byte, 64) // 32 needed
-	n, e := Com.Read(b)
+        var n int
+	n, e = Com.Read(b)
 	if e != nil {
 		fmt.Println(e)
 	}
@@ -126,7 +127,7 @@ func SendAndReceive(cmd string, ms time.Duration) (string, error) {
 		return "", e
 	}
 	b = b[:n]
-	r := string(b)
+	r = string(b)
 	return r, e
 }
 
@@ -156,22 +157,28 @@ func OutputGeneralOn() {
 	Command("OUTPUT:GENERAL ON")
 }
 
-func SetOutputChannel1Off() {
+func OutputChannelOff( n int ) {
+        ch := fmt.Sprintf( "%d", n )
+	Command("INST:SEL OUT"+ch)
+	Command("OUTPUT:SELECT OFF")
+}
+
+func OutputChannel1Off() {
 	Command("INST:SEL OUT1")
 	Command("OUTPUT:SELECT OFF")
 }
 
-func SetOutputChannel1On() {
+func OutputChannel1On() {
 	Command("INST:SEL OUT1")
 	Command("OUTPUT:SELECT ON")
 }
 
-func SetOutputChannel2Off() {
+func OutputChannel2Off() {
 	Command("INST:SEL OUT2")
 	Command("OUTPUT:SELECT OFF")
 }
 
-func SetOutputChannel2On() {
+func OutputChannel2On() {
 	Command("INST:SEL OUT2")
 	Command("OUTPUT:SELECT ON")
 }
