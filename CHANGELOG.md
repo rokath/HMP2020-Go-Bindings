@@ -12,3 +12,11 @@
 ## v0.2.0 Refactored Release (tested)
 
 * The internal interface is improved.
+
+## v0.3.0 Refactored Release (tested)
+
+* The internal interface is improved.
+
+## v0.3.1 Refactored Release (tested)
+
+* This is a minor improvement.

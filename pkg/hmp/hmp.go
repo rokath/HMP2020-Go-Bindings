@@ -29,6 +29,9 @@ var (
 
 	// StopBits is the number of stop bits: "1", "1.5", "2"
 	StopBits = "1"
+
+	// Power is the power device to be controlled.
+	Power *Device
 )
 
 type Device struct {

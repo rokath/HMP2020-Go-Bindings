@@ -28,11 +28,6 @@ var (
 	// Version is the program version number and is injected from main package.
 	VersionFlag bool
 
-	// c is the hmp com port.
-	//p *com.Port
-
-	p *hmp.Device
-
 	// scanComPorts is used to find com ports.
 	scanComPorts bool
 )
@@ -98,29 +93,27 @@ func Handler(w io.Writer, fSys *afero.Afero, args []string) error {
 			fmt.Println(`CLI switch '-p' exists, try to connect to HMP...`)
 		}
 
-		p = hmp.NewDevice(w, hmp.SerialPortName, hmp.BaudRate, hmp.DataBits, hmp.Parity, hmp.StopBits, Verbose)
-
-		e := p.Connect()
+		hmp.Power = hmp.NewDevice(w, hmp.SerialPortName, hmp.BaudRate, hmp.DataBits, hmp.Parity, hmp.StopBits, Verbose)
+		defer hmp.Power.Close()
+		e := hmp.Power.Connect()
 		if e != nil {
 			log.Fatal(e)
 		}
-
-		defer p.Close()
 	}
 
 	// example:
 
-	p.OutputOFF(-1)
-	p.SetVoltage(2, "2")
-	p.SetCurrent(2, "10")
-	p.OutputON(-1)
-	p.OutputON(2)
-	fmt.Print(p.Voltage(2))
-	fmt.Print(p.Current(2))
+	hmp.Power.OutputOFF(-1)
+	hmp.Power.SetVoltage(2, "1.7")  // 1.7V
+	hmp.Power.SetCurrent(2, "1000") // 1A
+	hmp.Power.OutputON(-1)
+	hmp.Power.OutputON(2)
+	fmt.Print(hmp.Power.Voltage(2))
+	fmt.Print(hmp.Power.Current(2))
 	for {
 		time.Sleep(3 * time.Second)
-		p.OutputOFF(2)
+		hmp.Power.OutputOFF(2)
 		time.Sleep(1000 * time.Millisecond)
-		p.OutputON(2)
+		hmp.Power.OutputON(2)
 	}
 }
