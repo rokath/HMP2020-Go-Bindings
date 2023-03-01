@@ -20,3 +20,7 @@
 ## v0.3.1 Refactored Release (tested)
 
 * This is a minor improvement.
+
+## v0.3.2 Refactored Release (tested)
+
+* This is a minor correction.
