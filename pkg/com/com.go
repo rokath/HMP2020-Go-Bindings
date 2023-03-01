@@ -131,7 +131,7 @@ func GetSerialPorts(w io.Writer, verbose bool) ([]string, error) {
 		return ports, err
 	}
 	for _, port := range ports {
-		pS := NewPort(w, port, 115200, 8, "N", "1", false)
+		pS := NewPort(w, "try", port, 115200, 8, "N", "1", false)
 		if pS.Open() {
 			pS.Close()
 			fmt.Fprintln(w, "Found port: ", port)
