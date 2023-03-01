@@ -8,6 +8,8 @@ require (
 )
 
 require (
-	golang.org/x/sys v0.0.0-20210615035016-665e8c7367d1 // indirect
+	github.com/creack/goselect v0.1.2 // indirect
+	go.bug.st/serial v1.5.0 // indirect
+	golang.org/x/sys v0.0.0-20220829200755-d48e67d00261 // indirect
 	golang.org/x/text v0.3.4 // indirect
 )
