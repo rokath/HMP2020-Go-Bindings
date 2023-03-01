@@ -1,4 +1,4 @@
-// Package hmp provides remote access to Rohde&Schwarz HMP2020 power supply
+8// Package hmp provides remote access to Rohde&Schwarz HMP2020 power supply
 package hmp
 
 import (
@@ -149,20 +149,52 @@ func Command(cmd string) {
 	Send(cmd+"\r\n", 100) // 50 is the fractal border.
 }
 
-func OutputGeneralOff() {
-	Command("OUTPUT:GENERAL OFF")
-}
-
-func OutputGeneralOn() {
-	Command("OUTPUT:GENERAL ON")
-}
-
-func OutputChannelOff( n int ) {
-        ch := fmt.Sprintf( "%d", n )
+func OutputOFF( n int ) {
+        if n <= 0{
+            Command("OUTPUT:GENERAL OFF")  
+            return
+        }
+        ch := strconv.Itoa(n)
 	Command("INST:SEL OUT"+ch)
 	Command("OUTPUT:SELECT OFF")
 }
 
+func OutputON( n int ) {
+        if n <= 0{
+            Command("OUTPUT:GENERAL ON")  
+            return
+        }
+        ch := strconv.Itoa(n)
+	Command("INST:SEL OUT"+ch)
+	Command("OUTPUT:SELECT ON")
+}
+
+func SetVoltage(n int, v string) {
+        ch := strconv.Itoa(n)
+	Command("INST:SEL OUT"+ch)
+	Command("SOURCE:VOLTAGE:LEVEL " + v)
+}
+
+func Voltage(n int) (v string) {
+        ch := strconv.Itoa(n)
+	Command("INST:SEL OUT"+ch)
+	return Query("MEASURE:SCALAR:VOLTAGE:DC?")
+}
+
+func SetCurrent(n int, v string) {
+        ch := strconv.Itoa(n)
+	Command("INST:SEL OUT"+ch)
+	Command("SOURCE:CURRENT:LEVEL " + v)
+}
+
+func Current(n int) (v string) {
+        ch := strconv.Itoa(n)
+	Command("INST:SEL OUT"+ch)
+	return Query("MEASURE:SCALAR:CURRENT:DC?")
+}
+
+
+/*
 func OutputChannel1Off() {
 	Command("INST:SEL OUT1")
 	Command("OUTPUT:SELECT OFF")
@@ -222,3 +254,4 @@ func CurrentChannel2() (v string) {
 	Command("INST:SEL OUT2")
 	return Query("MEASURE:SCALAR:CURRENT:DC?")
 }
+*/
