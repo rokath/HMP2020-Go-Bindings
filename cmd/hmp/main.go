@@ -25,11 +25,11 @@ var (
 // main is the entry point.
 func main() {
 	fSys := &afero.Afero{Fs: afero.NewOsFs()} // os.DirFS("")
-	doit(os.Stdout, fSys)
+	doit(os.Stdout, fSys, os.Args)
 }
 
 // doit is the action.
-func doit(w io.Writer, fSys *afero.Afero) {
+func doit(w io.Writer, fSys *afero.Afero, args []string) {
 
 	// inject values
 	args.Version = version
@@ -38,7 +38,7 @@ func doit(w io.Writer, fSys *afero.Afero) {
 
 	rand.Seed(time.Now().UnixNano())
 
-	e := args.Handler(w, fSys, os.Args)
+	e := args.Handler(w, fSys, args)
 	if e != nil {
 		fmt.Fprintln(w, error.Error(e))
 	}
