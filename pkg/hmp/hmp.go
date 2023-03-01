@@ -2,8 +2,9 @@ package hmp
 
 import (
 	"errors"
-	"flag"
 	"fmt"
+	"io"
+	"log"
 	"strings"
 	"time"
 
@@ -14,18 +15,67 @@ var (
 	// Verbose, if true gives additional information for issue fixing.
 	Verbose bool
 
-	Port com.Port
+	// SerialPortName is the OS specific serial port name used for HMP device.
+	SerialPortName string
+
+	// Parity is the transmitted bit parity: "even", "odd", "none"
+	Parity string
+
+	// BaudRate is the configured baud rate of the serial port. It is set as command line parameter.
+	BaudRate int
+
+	// DataBits is the serial port bit count for one "byte".
+	DataBits int
+
+	// StopBits is the number of stop bits: "1", "1.5", "2"
+	StopBits = "1"
 )
 
-func init() {
-	flag.StringVar(&com.SerialPortName, "portHMP", "", "Use Port for HMP2020 or HMP4040")
-	flag.StringVar(&com.SerialPortName, "ph", "", "Short for portHMP")
+type Device struct {
 
+	// Ports is the assigned communictation port.
+	Port *com.Port
+
+	verbose bool
+
+	w io.Writer
+}
+
+func NewDevice(w io.Writer, serialPortName string, baudRate int, dataBits int, parity string, stopBits string, verbose bool) (p *Device) {
+	p = new(Device)
+	p.verbose = verbose
+	p.w = w
+	p.Port = com.NewPort(w, SerialPortName, baudRate, dataBits, parity, stopBits, verbose)
+
+	if !p.Port.Open() {
+		log.Fatal(errors.New(serialPortName + " port failure, try with -v for more information"))
+	}
+	return
+}
+
+// Read blocks until (at least) one byte is received from
+// the serial port or an error occurs.
+// It stores data received from the serial port into the provided byte array
+// buffer. The function returns the number of bytes read.
+func (p *Device) Read(buf []byte) (int, error) {
+	return p.Port.Read(buf)
+}
+
+func (p *Device) Write(buf []byte) (int, error) {
+	return p.Port.Write(buf)
+}
+
+// Close releases port.
+func (p *Device) Close() error {
+	if p.verbose {
+		fmt.Fprintln(p.w, "Closing COM port")
+	}
+	return p.Port.Close()
 }
 
 // Connect tries to get contact to HMP2020.
-func Connect(p *com.Port) error {
-	response, e := SendAndReceive(p, "*IDN?\n", 100) // 50 is the fractal border.
+func (p *Device) Connect() error {
+	response, e := p.SendAndReceive("*IDN?\n", 100) // 50 is the fractal border.
 	if e != nil {
 		return e
 	}
@@ -40,7 +90,7 @@ func Connect(p *com.Port) error {
 }
 
 // Send transmits cmd and waits ms afterwards before returning.
-func Send(p *com.Port, cmd string, ms time.Duration) {
+func (p *Device) Send(cmd string, ms time.Duration) {
 	b := []byte(cmd)
 	m, e := p.Write(b)
 	if m != len(b) || e != nil {
@@ -51,8 +101,8 @@ func Send(p *com.Port, cmd string, ms time.Duration) {
 
 // SendAndReceive transmits cmd, waits ms milliseconds and returns response in r.
 // The returned string is "as is" from HMP2020.
-func SendAndReceive(p *com.Port, cmd string, ms time.Duration) (r string, e error) {
-	Send(p, cmd, ms)      // needs a line end
+func (p *Device) SendAndReceive(cmd string, ms time.Duration) (r string, e error) {
+	p.Send(cmd, ms)       // needs a line end
 	b := make([]byte, 64) // 32 needed
 	var n int
 	n, e = p.Read(b)
@@ -68,20 +118,20 @@ func SendAndReceive(p *com.Port, cmd string, ms time.Duration) (r string, e erro
 	return r, e
 }
 
-func Query(p *com.Port, cmd string) (response string) {
+func (p *Device) Query(cmd string) (response string) {
 	if Verbose {
 		fmt.Println("query:", cmd)
 	}
-	response, e := SendAndReceive(p, cmd+"\r\n", 500) // 50 is the fractal border.
+	response, e := p.SendAndReceive(cmd+"\r\n", 500) // 50 is the fractal border.
 	if e != nil {
 		fmt.Println(e) // log.Fatal(e)
 	}
 	return
 }
 
-func Command(p *com.Port, cmd string) {
+func (p *Device) Command(cmd string) {
 	if Verbose {
 		fmt.Println("command:", cmd)
 	}
-	Send(p, cmd+"\r\n", 100) // 50 is the fractal border.
+	p.Send(cmd+"\r\n", 100) // 50 is the fractal border.
 }

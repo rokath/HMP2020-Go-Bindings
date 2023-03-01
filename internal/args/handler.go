@@ -1,7 +1,6 @@
 package args
 
 import (
-	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -29,8 +28,10 @@ var (
 	// Version is the program version number and is injected from main package.
 	VersionFlag bool
 
-	// p is the hmp com port.
-	p *com.Port
+	// c is the hmp com port.
+	//p *com.Port
+
+	p *hmp.Device
 
 	// scanComPorts is used to find com ports.
 	scanComPorts bool
@@ -40,7 +41,15 @@ func init() {
 	flag.BoolVar(&scanComPorts, "s", false, "Scan com ports")
 	flag.BoolVar(&VersionFlag, "version", false, "Show version information.")
 	flag.BoolVar(&Verbose, "v", false, "Show verbose messages")
+}
 
+func init() {
+	flag.StringVar(&hmp.SerialPortName, "hmpPort", "", "Use Port for HMP2020 or HMP4040")
+	flag.StringVar(&hmp.SerialPortName, "p", "", "Short for hmpPort")
+	flag.IntVar(&hmp.BaudRate, "hmpBaud", 115200, "Set HMP baud rate.")
+	flag.IntVar(&hmp.DataBits, "hmpDataBits", 8, "Set HMP data bit count.")
+	flag.StringVar(&hmp.Parity, "hmpParity", "none", "Set parity")
+	flag.StringVar(&hmp.StopBits, "hmpStopBits", "1", "Set parity")
 }
 
 // Handler is called in main, evaluates args and calls the appropriate functions.
@@ -81,37 +90,37 @@ func Handler(w io.Writer, fSys *afero.Afero, args []string) error {
 		_, e := com.GetSerialPorts(w)
 		return e
 	}
-	if com.SerialPortName == "" {
+	if hmp.SerialPortName == "" {
 		fmt.Println(`no comport name, enter "hmp -help"`)
 		return nil
 	} else {
 		if Verbose {
-			fmt.Println(`CLI switch '-ph' exists, try to connect to HMP...`)
+			fmt.Println(`CLI switch '-p' exists, try to connect to HMP...`)
 		}
-		p = com.NewPort(w, com.SerialPortName, Verbose)
-		if !p.Open() {
-			return errors.New(com.SerialPortName + " port failure, try with -v for more information")
-		}
-		defer p.Close()
-		e := hmp.Connect(p)
+
+		p = hmp.NewDevice(w, hmp.SerialPortName, hmp.BaudRate, hmp.DataBits, hmp.Parity, hmp.StopBits, Verbose)
+
+		e := p.Connect()
 		if e != nil {
 			log.Fatal(e)
 		}
+
+		defer p.Close()
 	}
 
 	// example:
 
-	hmp.OutputOFF(p, -1)
-	hmp.SetVoltage(p, 2, "2")
-	hmp.SetCurrent(p, 2, "10")
-	hmp.OutputON(p, -1)
-	hmp.OutputON(p, 2)
-	fmt.Print(hmp.Voltage(p, 2))
-	fmt.Print(hmp.Current(p, 2))
+	p.OutputOFF(-1)
+	p.SetVoltage(2, "2")
+	p.SetCurrent(2, "10")
+	p.OutputON(-1)
+	p.OutputON(2)
+	fmt.Print(p.Voltage(2))
+	fmt.Print(p.Current(2))
 	for {
-		time.Sleep(5 * time.Second)
-		hmp.OutputOFF(p, 2)
+		time.Sleep(3 * time.Second)
+		p.OutputOFF(2)
 		time.Sleep(1000 * time.Millisecond)
-		hmp.OutputON(p, 2)
+		p.OutputON(2)
 	}
 }
