@@ -21,7 +21,7 @@
 <!-- PROJECT LOGO -->
 <div align="center">
   <a href="https://github.com/othneildrew/Best-README-Template"><img src="images/logo.jfif" alt="Logo"></a>
-  <h3 align="center">Rohde&schwarz HMP2020 Series Remote Control with Go</h3>
+  <h3 align="center">Rohde&Schwarz HMP2020 Series Remote Control with Go</h3>
   <p align="center"> Use USB Virtual Com Port for switching the Power Supply</p>
 </div>
 
