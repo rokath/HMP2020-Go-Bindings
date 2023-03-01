@@ -46,7 +46,7 @@ func NewDevice(w io.Writer, serialPortName string, baudRate int, dataBits int, p
 	p = new(Device)
 	p.verbose = verbose
 	p.w = w
-	p.Port = com.NewPort(w, SerialPortName, baudRate, dataBits, parity, stopBits, verbose)
+	p.Port = com.NewPort(w, "HMP", SerialPortName, baudRate, dataBits, parity, stopBits, verbose)
 
 	if !p.Port.Open() {
 		log.Fatal(errors.New(serialPortName + " port failure, try with -v for more information"))

@@ -29,10 +29,11 @@ type Port struct {
 	serialHandle serial.Port
 	serialMode   serial.Mode
 	w            io.Writer
+	label        string
 }
 
 // NewPort creates an instance of a serial device type trice receiver
-func NewPort(w io.Writer, comPortName string, baud int, dataBits int, parity string, stopBits string, verbose bool) *Port {
+func NewPort(w io.Writer, label string, comPortName string, baud int, dataBits int, parity string, stopBits string, verbose bool) *Port {
 	var parityB serial.Parity
 	switch strings.ToLower(parity) {
 	case "n", "no", "none":
@@ -71,6 +72,7 @@ func NewPort(w io.Writer, comPortName string, baud int, dataBits int, parity str
 		},
 	}
 
+	r.label = label
 	r.w = w
 	r.verbose = verbose
 	if verbose {
@@ -94,7 +96,7 @@ func (p *Port) Write(buf []byte) (int, error) {
 // Close releases port.
 func (p *Port) Close() error {
 	if p.verbose {
-		fmt.Fprintln(p.w, "Closing COM port")
+		fmt.Fprintln(p.w, "Closing "+p.label+" COM port.")
 	}
 	return p.serialHandle.Close()
 }
