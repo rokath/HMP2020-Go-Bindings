@@ -14,10 +14,6 @@ import (
 	"go.bug.st/serial"
 )
 
-var (
-	Verbose bool
-)
-
 // COMport is the comport interface type to use different COMports.
 type COMport interface {
 	Open() bool
@@ -119,7 +115,7 @@ func (p *Port) Open() bool {
 }
 
 // GetSerialPorts scans for serial ports.
-func GetSerialPorts(w io.Writer) ([]string, error) {
+func GetSerialPorts(w io.Writer, verbose bool) ([]string, error) {
 	ports, err := serial.GetPortsList()
 
 	if err != nil {
@@ -127,7 +123,7 @@ func GetSerialPorts(w io.Writer) ([]string, error) {
 		return ports, err
 	}
 	if len(ports) == 0 {
-		if Verbose {
+		if verbose {
 			fmt.Fprintln(w, "No serial ports found!")
 		}
 		return ports, err

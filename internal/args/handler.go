@@ -23,7 +23,7 @@ var (
 	Date string
 
 	// Verbose, if true gives additional information for issue fixing.
-	Verbose bool
+	verbose bool
 
 	// Version is the program version number and is injected from main package.
 	VersionFlag bool
@@ -35,7 +35,7 @@ var (
 func init() {
 	flag.BoolVar(&scanComPorts, "s", false, "Scan com ports")
 	flag.BoolVar(&VersionFlag, "version", false, "Show version information.")
-	flag.BoolVar(&Verbose, "v", false, "Show verbose messages")
+	flag.BoolVar(&verbose, "v", false, "Show verbose messages")
 }
 
 func init() {
@@ -67,9 +67,6 @@ func Handler(w io.Writer, fSys *afero.Afero, args []string) error {
 		return nil
 	}
 
-	com.Verbose = Verbose
-	hmp.Verbose = Verbose
-
 	if VersionFlag {
 		if Version != "" {
 			fmt.Print("version=", Version)
@@ -82,18 +79,18 @@ func Handler(w io.Writer, fSys *afero.Afero, args []string) error {
 	}
 
 	if scanComPorts {
-		_, e := com.GetSerialPorts(w)
+		_, e := com.GetSerialPorts(w, verbose)
 		return e
 	}
 	if hmp.SerialPortName == "" {
 		fmt.Println(`no comport name, enter "hmp -help"`)
 		return nil
 	} else {
-		if Verbose {
+		if verbose {
 			fmt.Println(`CLI switch '-p' exists, try to connect to HMP...`)
 		}
 
-		hmp.Power = hmp.NewDevice(w, hmp.SerialPortName, hmp.BaudRate, hmp.DataBits, hmp.Parity, hmp.StopBits, Verbose)
+		hmp.Power = hmp.NewDevice(w, hmp.SerialPortName, hmp.BaudRate, hmp.DataBits, hmp.Parity, hmp.StopBits, verbose)
 		defer hmp.Power.Close()
 		e := hmp.Power.Connect()
 		if e != nil {

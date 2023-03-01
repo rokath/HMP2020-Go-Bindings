@@ -12,8 +12,6 @@ import (
 )
 
 var (
-	// Verbose, if true gives additional information for issue fixing.
-	Verbose bool
 
 	// SerialPortName is the OS specific serial port name used for HMP device.
 	SerialPortName string
@@ -86,7 +84,7 @@ func (p *Device) Connect() error {
 	if response[:len(exp)] != exp {
 		return fmt.Errorf("HMP2020 not connected")
 	}
-	if Verbose {
+	if p.verbose {
 		fmt.Println(strings.TrimSuffix(response, "\n"), "connected")
 	}
 	return nil
@@ -122,7 +120,7 @@ func (p *Device) SendAndReceive(cmd string, ms time.Duration) (r string, e error
 }
 
 func (p *Device) Query(cmd string) (response string) {
-	if Verbose {
+	if p.verbose {
 		fmt.Println("query:", cmd)
 	}
 	response, e := p.SendAndReceive(cmd+"\r\n", 500) // 50 is the fractal border.
@@ -133,7 +131,7 @@ func (p *Device) Query(cmd string) (response string) {
 }
 
 func (p *Device) Command(cmd string) {
-	if Verbose {
+	if p.verbose {
 		fmt.Println("command:", cmd)
 	}
 	p.Send(cmd+"\r\n", 100) // 50 is the fractal border.
