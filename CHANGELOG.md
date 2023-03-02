@@ -36,3 +36,7 @@
 ## v0.3.5 Refactored Release (tested)
 
 * This is a minor correction.
+
+## v0.3.6 Refactored Release (tested)
+
+* This is a minor correction.

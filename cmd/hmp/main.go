@@ -7,7 +7,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/rokath/HMP2020-Go-Bindings/internal/args"
+	arg "github.com/rokath/HMP2020-Go-Bindings/internal/args"
 	"github.com/spf13/afero"
 )
 
@@ -32,13 +32,13 @@ func main() {
 func doit(w io.Writer, fSys *afero.Afero, args []string) {
 
 	// inject values
-	args.Version = version
-	args.Commit = commit
-	args.Date = date
+	arg.Version = version
+	arg.Commit = commit
+	arg.Date = date
 
 	rand.Seed(time.Now().UnixNano())
 
-	e := args.Handler(w, fSys, args)
+	e := arg.Handler(w, fSys, args)
 	if e != nil {
 		fmt.Fprintln(w, error.Error(e))
 	}
