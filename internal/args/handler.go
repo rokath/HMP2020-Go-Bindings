@@ -30,6 +30,21 @@ var (
 
 	// scanComPorts is used to find com ports.
 	scanComPorts bool
+
+	// channel is the output channel.
+	channel int
+
+	// voltage is the channel specific voltage.
+	voltage string
+
+	// current is the channel specific max current in mA
+	current string
+
+	// timeOn is the channel specific ON time in ms.
+	timeOn int
+
+	// timeOff is the channel specific OFF time in ms.
+	timeOff int
 )
 
 func init() {
@@ -39,12 +54,22 @@ func init() {
 }
 
 func init() {
-	flag.StringVar(&hmp.SerialPortName, "hmpPort", "", "Use Port for HMP2020 or HMP4040")
 	flag.StringVar(&hmp.SerialPortName, "p", "", "Short for hmpPort")
-	flag.IntVar(&hmp.BaudRate, "hmpBaud", 115200, "Set HMP baud rate.")
+	flag.StringVar(&hmp.SerialPortName, "hmpPort", "", "Use Port for HMP2020 or HMP4040")
+	flag.IntVar(&hmp.BaudRate, "hmpBaud", 9600, "Set HMP baud rate.")
 	flag.IntVar(&hmp.DataBits, "hmpDataBits", 8, "Set HMP data bit count.")
 	flag.StringVar(&hmp.Parity, "hmpParity", "none", "Set parity")
 	flag.StringVar(&hmp.StopBits, "hmpStopBits", "1", "Set parity")
+	flag.IntVar(&channel, "hmpChannel", 1, "Select HMP channel.")
+	flag.IntVar(&channel, "ch", 1, "Short for hmpChannel.")
+}
+
+func init() {
+	flag.StringVar(&voltage, "V", "1.7", "Set channel output voltage.")
+	flag.StringVar(&current, "mA", "10", "Set channel max current.")
+	flag.IntVar(&timeOn, "msON", 5000, "Set channel time ON.")
+	flag.IntVar(&timeOff, "msOFF", 1000, "Set channel time OFF.")
+
 }
 
 // Handler is called in main, evaluates args and calls the appropriate functions.
@@ -101,16 +126,18 @@ func Handler(w io.Writer, fSys *afero.Afero, args []string) error {
 	// example:
 
 	hmp.Power.OutputOFF(-1)
-	hmp.Power.SetVoltage(2, "1.7")  // 1.7V
-	hmp.Power.SetCurrent(2, "1000") // 1A
+	hmp.Power.SetVoltage(channel, voltage)
+	hmp.Power.SetCurrent(channel, current)
 	hmp.Power.OutputON(-1)
-	hmp.Power.OutputON(2)
-	fmt.Print(hmp.Power.Voltage(2))
-	fmt.Print(hmp.Power.Current(2))
 	for {
-		time.Sleep(3 * time.Second)
-		hmp.Power.OutputOFF(2)
-		time.Sleep(1000 * time.Millisecond)
-		hmp.Power.OutputON(2)
+		hmp.Power.OutputON(channel)
+		time.Sleep(time.Duration(timeOn) * time.Millisecond)
+		if verbose {
+			fmt.Print("channel:", channel, "V=", hmp.Power.Voltage(channel))
+			fmt.Print("channel:", channel, "mA=", hmp.Power.Current(channel))
+		}
+		hmp.Power.OutputOFF(channel)
+		time.Sleep(time.Duration(timeOff) * time.Millisecond)
+		hmp.Power.OutputON(channel)
 	}
 }
