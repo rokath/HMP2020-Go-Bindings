@@ -30,8 +30,10 @@
   <summary>Table of Contents</summary>
 
 <!-- vscode-markdown-toc -->
+
 - [1. About The Project](#1-about-the-project)
-- [2. License](#2-license)
+- [2. Usage](#2-usage)
+- [3. License](#3-license)
 
 <!-- vscode-markdown-toc-config
 	numbering=true
@@ -49,9 +51,25 @@ This package provides a Go package you can use for HMP2020 remote control.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
+##  2. <a name='Usage'></a>Usage
+
+You can use the hmp executable in this way without building the software:
+
+```bash
+hmp -p com7 -ch 2 -V 24 -mA 10000  -msON 5000 -msOFF 1000 -v
+```
+
+* Uses COM port 7 (as example)
+* Control channel 2
+* Set Channel to 24 Volt output voltage.
+* Set channel to 1000 mA max current.
+* Start endless loop:
+  * Switch channel ON for 5 seconds.
+  * Switch channel OFF for 1 second.
+* Show all commands and measured values.
 
 <!-- LICENSE -->
-##  2. <a name='License'></a>License
+##  3. <a name='License'></a>License
 
 Distributed under the MIT License. See `LICENSE.txt` for more information.
 

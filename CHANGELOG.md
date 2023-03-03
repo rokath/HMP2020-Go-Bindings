@@ -40,3 +40,7 @@
 ## v0.3.6 Refactored Release (tested)
 
 * This is a minor correction.
+
+## v0.4.0 CLI switches added
+
+* Command line interface switches can control the HMP device.
