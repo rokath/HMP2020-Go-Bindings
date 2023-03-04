@@ -61,7 +61,7 @@ hmp -p com7 -ch 2 -V 24 -mA 10000  -msON 5000 -msOFF 1000 -v
 
 * Uses COM port 7 (as example)
 * Control channel 2
-* Set Channel to 24 Volt output voltage.
+* Set channel to 24 Volt output voltage.
 * Set channel to 1000 mA max current.
 * Start endless loop:
   * Switch channel ON for 5 seconds.
