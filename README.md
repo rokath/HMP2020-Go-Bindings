@@ -56,7 +56,7 @@ This package provides a Go package you can use for HMP2020 remote control.
 You can use the hmp executable in this way without building the software:
 
 ```bash
-hmp -p com7 -ch 2 -V 24 -mA 1000  -msON 5000 -msOFF 1000 -v
+hmp -p com7 -ch 2 -V 24 -mA 1000 -msON 5000 -msOFF 1000 -v
 ```
 
 * Uses COM port 7 (as example)
