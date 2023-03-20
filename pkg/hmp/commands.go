@@ -2,6 +2,7 @@ package hmp
 
 import (
 	"strconv"
+	"time"
 )
 
 // OutputOFF disables output on channel n. Valid channel numbers are 1, 2, 3, 4.
@@ -26,6 +27,19 @@ func (p *Device) OutputON(n int) {
 	ch := strconv.Itoa(n)
 	p.Command("INST:SEL OUT" + ch)
 	p.Command("OUTPUT:SELECT ON")
+}
+
+// VoltageRamp changes voltage on channel in direction UP or DOWN. Valid channel numbers are 1, 2, 3, 4.
+// stepSize is in Volt units.
+func (p *Device) VoltageRamp(channel int, direction, stepSize string, stepTime time.Duration, stepCount int) {
+	ch := strconv.Itoa(channel)
+	p.Command("INST:SEL OUT" + ch)
+	p.Command("SOURCE:VOLTAGE:STEP " + stepSize)
+	for stepCount > 0 {
+		stepCount--
+		time.Sleep(stepTime)
+		p.Command("STEP " + direction)
+	}
 }
 
 // SetVoltage sets voltage on channel n. Valid channel numbers are 1, 2, 3, 4.
