@@ -33,6 +33,9 @@
 
 - [1. About The Project](#1-about-the-project)
 - [2. Usage](#2-usage)
+- [General Information](#general-information)
+  - [Stepping Example](#stepping-example)
+  - [Arbitrary Example](#arbitrary-example)
 - [3. License](#3-license)
 
 <!-- vscode-markdown-toc-config
@@ -68,6 +71,47 @@ hmp -p com7 -ch 2 -V 24 -mA 1000 -msON 5000 -msOFF 1000 -v
   * Switch channel OFF for 1 second.
 * Show all commands and measured values.
 
+## General Information
+
+* All HPM series devices support similar SCPI command as long as the functionality is equal.
+* All NG series devices support similar SCPI command as long as the functionality is equal.
+* Basic commands for setting and reading voltage and current and enabling/disabling the output are equal for all devices.
+* The HMP does not support SCPI command concatenation with ";". Each command needs to be transmitted separately.
+* Step commands are executed as they occur as long the max and min values are not exceeded.
+
+### Stepping Example
+
+```bash
+INST OUT1  // Instrument output 1
+VOLT 
+VOLT:STEP 0.4 // step size 400 mV
+VOLT UP    // step up
+VOLT UP    // step up
+...
+VOLT UP    // step up
+VOLT DOWN  // step down
+VOLT DOWN  // step down
+...
+VOLT DOWN  // step down
+...
+```
+
+### Arbitrary Example
+
+* It is important to delete the old curve.
+* The EasyArb inside HMP supports max 128 points.
+* Max 255 repetitions are possible. Higher numbers accepted without error message, but only 255 are executed.
+* Time resolution and min duration is 10 ms.
+
+```bash
+ARB:CLEAR 2                        // clear channel 2
+ARB:DATA 12.0,1.0,0.1,6.0,2.0,0.05 // 2 Points: 12V@1A & 100ms then 6V@2A & 50ms
+ARB:REP 100                        // 100 repetitions
+ARB:TRAN 2
+ARB:STAR 2                         // start channel 2
+OUTP ON                            // enable output
+
+```
 <!-- LICENSE -->
 ##  3. <a name='License'></a>License
 
