@@ -33,12 +33,12 @@ func (p *Device) OutputON(n int) {
 // stepSize is in Volt units.
 func (p *Device) VoltageRamp(channel int, direction, stepSize string, stepTime time.Duration, stepCount int) {
 	ch := strconv.Itoa(channel)
-	p.Command("INST:SEL OUT" + ch)
-	p.Command("SOURCE:VOLTAGE:STEP " + stepSize)
+	p.Command("INST:OUT" + ch)
+	p.Command("VOLT:STEP " + stepSize)
 	for stepCount > 0 {
 		stepCount--
 		time.Sleep(stepTime)
-		p.Command("STEP " + direction)
+		p.Command("VOLT " + direction)
 	}
 }
 

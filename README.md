@@ -59,7 +59,7 @@ This package provides a Go package you can use for HMP2020 remote control.
 You can use the demo app, the **hmp** executable, in this way without building the software to generate power cycles for testing:
 
 ```bash
-hmp -p com7 -ch 2 -V 24 -mA 1000 -msON 5000 -msOFF 1000 -v
+hmp -p com7 -ch 2 -V 24 -A 1.000 -msON 5000 -msOFF 1000 -v
 ```
 
 * Uses COM port 7 (as example)
