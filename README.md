@@ -73,8 +73,8 @@ hmp -p com7 -ch 2 -V 24 -A 1.000 -msON 5000 -msOFF 1000 -v
 
 ## General Information
 
-* All HPM series devices support similar SCPI command as long as the functionality is equal.
-* All NG series devices support similar SCPI command as long as the functionality is equal.
+* All HPM series devices support similar SCPI commands as long as the functionality is equal.
+* All NG series devices support similar SCPI commands as long as the functionality is equal.
 * Basic commands for setting and reading voltage and current and enabling/disabling the output are equal for all devices.
 * The HMP does not support SCPI command concatenation with ";". Each command needs to be transmitted separately.
 * Step commands are executed as they occur as long the max and min values are not exceeded.
