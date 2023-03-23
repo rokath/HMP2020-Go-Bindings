@@ -30,6 +30,9 @@ var (
 
 	// Power is the power device to be controlled.
 	Power *Device
+
+	// power out channel
+	Channel int
 )
 
 type Device struct {
